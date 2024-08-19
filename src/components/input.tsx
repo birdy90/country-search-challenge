@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { MdClose } from 'react-icons/md';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/cn';
 
 export const Input = (props: AllHTMLAttributes<HTMLInputElement>) => {
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,3 +1,8 @@
+export type Coordinates = {
+  lat: number;
+  lng: number;
+};
+
 export type CountryItem = {
   alpha2Code: string;
   alpha3Code: string;
