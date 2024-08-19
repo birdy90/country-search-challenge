@@ -1,5 +1,30 @@
 # Closest country search challenge
 
+## Requirements
+
+- build search input
+  - clearable
+  - makes requests to API
+  - shows results list
+- build API endpoint
+  - gets current position by IP 
+  - let user pass lat/lng through query parameters instead of automatic detection
+  - filters results from data source (provided JSON file)
+  - sorts countries by ascending distance
+- selected country with additional info
+
+## Todo list
+
+[ ] input component styling, make it clearable
+[ ] results list styling
+[ ] selected country styling
+[ ] API: automatic location detection
+[ ] API: handle coordinates from request parameters
+[ ] API: endpoint to get and sort data by string
+[ ] combine input and results list
+[ ] coordinates selector styling, make it clearable
+[ ] pass selected coordinates to API
+
 ## Run information
 
 Built with [Next.js + Tailwind CSS + TypeScript Starter and Boilerplate](https://github.com/theodorusclarence/ts-nextjs-tailwind-starter)
