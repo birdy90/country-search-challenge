@@ -1,5 +1,8 @@
-import { Input } from '@/components/Input';
-import { ResultsList } from '@/components/ResultsList';
+import { countries } from '@/data/countries';
+
+import { CountryDescription } from '@/components/countryDescription/countryDescription';
+import { Input } from '@/components/input';
+import { ResultsList } from '@/components/resultsList';
 
 export default function Page() {
   return (
@@ -8,6 +11,11 @@ export default function Page() {
       <Input autoFocus placeholder='Enter country name' />
       <ResultsList items={['Georgia', 'Armenia', 'Austria']} />
       <ResultsList items={[]} />
+      {Array(countries.length)
+        .fill(0)
+        .map((_, i) => {
+          return <CountryDescription key={i} country={countries[i]} />;
+        })}
     </main>
   );
 }

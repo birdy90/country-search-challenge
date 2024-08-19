@@ -17,7 +17,7 @@
 
 - [x] input component styling, make it clearable
 - [x] results list styling
-- [ ] selected country styling
+- [x] selected country styling
 - [ ] API: automatic location detection
 - [ ] API: handle coordinates from request parameters
 - [ ] API: endpoint to get and sort data by string
