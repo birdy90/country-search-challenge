@@ -174,10 +174,6 @@
     "prefix": "ff",
     "body": ["<>", "\t${TM_SELECTED_TEXT}", "</>"]
   },
-  "Wrap with clsx": {
-    "prefix": "cx",
-    "body": ["{clsx([${TM_SELECTED_TEXT}$0])}"]
-  },
   "Wrap with cn": {
     "prefix": "cxn",
     "body": ["{cn([${TM_SELECTED_TEXT}$0, className])}"]
