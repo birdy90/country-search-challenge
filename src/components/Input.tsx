@@ -34,7 +34,10 @@ export const Input = (props: AllHTMLAttributes<HTMLInputElement>) => {
   }
 
   function onClearKeyDown(e: KeyboardEvent) {
-    e.preventDefault();
+    if (e.code !== 'Tab') {
+      e.preventDefault();
+    }
+
     if (e.code === 'Enter' || e.code === 'Space') {
       onClear();
     }

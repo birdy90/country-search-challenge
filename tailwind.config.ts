@@ -8,6 +8,11 @@ export default {
       gray: colors.gray,
       primary: colors.purple,
     },
+    extend: {
+      fontSize: {
+        default: '1rem',
+      },
+    },
   },
   plugins: [require('@tailwindcss/forms')],
 } satisfies Config;

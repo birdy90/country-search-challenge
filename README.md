@@ -16,7 +16,7 @@
 ## Todo list
 
 - [x] input component styling, make it clearable
-- [ ] results list styling
+- [x] results list styling
 - [ ] selected country styling
 - [ ] API: automatic location detection
 - [ ] API: handle coordinates from request parameters
