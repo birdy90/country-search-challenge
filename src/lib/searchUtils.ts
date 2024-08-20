@@ -1,9 +1,10 @@
 import { countries } from '@/data/countries';
 
-import { Coordinates, CountryItem } from '@/types';
+import { Coordinates, CountryItem, SearchResponse } from '@/types';
 
 export enum IpRequestErrors {
-  NOT_FOUND,
+  NOT_FOUND = 'not-found',
+  IP_REQUEST_FAILED = 'ip-request-failed',
 }
 
 /*
@@ -45,6 +46,9 @@ export const getCoords = async (ip: string, params: URLSearchParams) => {
   return coords;
 };
 
+/*
+Attaches distance property to every country object for farther search
+ */
 export const appendDistancesToCountries = (
   list: CountryItem[],
   coords: Coordinates,
@@ -61,13 +65,13 @@ export const appendDistancesToCountries = (
   });
 };
 
-export const stripDistanceFromCountries = (
-  list: { country: CountryItem; distance: number }[],
+/*
+Returns list of closest countries according to search string
+ */
+export const findClosestCountry = (
+  searchString: string,
+  coords: Coordinates,
 ) => {
-  return list.map<CountryItem>((item) => item.country);
-};
-
-export const searchData = (searchString: string, coords: Coordinates) => {
   if (searchString.length === 0) return [];
 
   const filteredCountries = countries.filter((country) =>
@@ -82,5 +86,59 @@ export const searchData = (searchString: string, coords: Coordinates) => {
   // now lets sort countries by distance
   countriesWithDistance.sort((a, b) => a.distance - b.distance);
 
-  return stripDistanceFromCountries(countriesWithDistance);
+  return countriesWithDistance.map<CountryItem>((item) => item.country);
+};
+
+/*
+Gets client-side coordinates
+ */
+const getClientsPosition = async () => {
+  return await new Promise<Coordinates>((res) => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      res({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      });
+    });
+  });
+};
+
+/*
+Performs search on the client-side
+ */
+export const performSearch = async (
+  searchValue: string,
+  coords?: Coordinates,
+): Promise<CountryItem[]> => {
+  const params = new URLSearchParams();
+  params.append('search', searchValue);
+  if (coords) {
+    params.append('lat', coords.lat.toString());
+    params.append('lng', coords.lng.toString());
+  }
+
+  try {
+    const response = await fetch(
+      `/api/search?${params.toString()}`,
+    ).then<SearchResponse>(async (data) => data.json());
+
+    if (response.error !== undefined) {
+      if (!coords) {
+        const clientCoords = await getClientsPosition();
+        return await performSearch(searchValue, clientCoords);
+      } else {
+        return [];
+      }
+    } else {
+      return response.results ?? [];
+    }
+  } catch (e: unknown) {
+    const error = e as Error;
+
+    // we use console.error here instead of sending a message to a logging system ony for current challenge
+    // eslint-disable-next-line no-console
+    console.error(`Unexpected error while performing search: ${error.message}`);
+  }
+
+  return [];
 };

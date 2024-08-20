@@ -35,4 +35,16 @@
     max-width: 68.75rem;
     @apply mx-auto w-full px-4;
   }
+
+  *::-webkit-scrollbar {
+    @apply bg-gray-100 w-2.5 h-2.5 m-2;
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply opacity-50;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 m-2 rounded-full;
+  }
 }

@@ -3,6 +3,11 @@ export type Coordinates = {
   lng: number;
 };
 
+export type SearchResponse = {
+  error?: string;
+  results?: CountryItem[];
+};
+
 export type CountryItem = {
   alpha2Code: string;
   alpha3Code: string;

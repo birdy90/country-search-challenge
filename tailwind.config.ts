@@ -5,8 +5,10 @@ export default {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     colors: {
+      white: colors.white,
+      black: colors.black,
       gray: colors.gray,
-      primary: colors.purple,
+      primary: colors.blue,
     },
     extend: {
       fontSize: {

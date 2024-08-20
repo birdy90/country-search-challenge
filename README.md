@@ -11,7 +11,7 @@
   - let user pass lat/lng through query parameters instead of automatic detection
   - filters results from data source (provided JSON file)
   - sorts countries by ascending distance
-- selected country with additional info
+- show selected country with additional info
 
 ## Todo list
 
@@ -21,9 +21,16 @@
 - [x] API: automatic location detection
 - [x] API: handle coordinates from request parameters
 - [x] API: endpoint to get and sort data by string
-- [ ] combine input and results list
+- [x] combine input and results list
+- [ ] select a country
 - [ ] coordinates selector styling, make it clearable
 - [ ] pass selected coordinates to API
+
+## Thoughts
+
+- I don't log errors to logging systems here
+- I did not implement full keyboard navigation for search results list. I could have used Downshift to handle that
+- it is better to cache responses from IP API for different IP addresses to avoid additional requests.
 
 ## Run information
 

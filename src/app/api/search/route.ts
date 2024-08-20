@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 
 import {
+  findClosestCountry,
   getCoords,
   getIpFromRequest,
   IpRequestErrors,
-  searchData,
 } from '@/lib/searchUtils';
 
 export async function GET(request: NextRequest) {
@@ -16,15 +16,23 @@ export async function GET(request: NextRequest) {
     return Response.json({ results: [] });
   }
 
-  const ip = getIpFromRequest(request);
-  const coords = await getCoords(ip, params);
+  let coords;
+  try {
+    const ip = getIpFromRequest(request);
+    coords = await getCoords(ip, params);
+  } catch {
+    return Response.json(
+      { error: IpRequestErrors.IP_REQUEST_FAILED },
+      { status: 404 },
+    );
+  }
 
   // if no coordinates defined
   if (!coords.lat || !coords.lng) {
     return Response.json({ error: IpRequestErrors.NOT_FOUND }, { status: 404 });
   }
 
-  const filteredCountries = searchData(searchString, coords);
+  const filteredCountries = findClosestCountry(searchString, coords);
 
-  return Response.json(filteredCountries);
+  return Response.json({ results: filteredCountries });
 }

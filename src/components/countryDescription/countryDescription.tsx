@@ -22,7 +22,7 @@ export const CountryDescription = (props: CountryDescriptionProps) => {
 
   return (
     <div>
-      <div className='flex items-start gap-6'>
+      <div className='flex flex-col sm:flex-row items-start gap-6'>
         <Image
           src={props.country.flags.svg}
           alt='flag'
@@ -31,7 +31,12 @@ export const CountryDescription = (props: CountryDescriptionProps) => {
           className='rounded-lg border border-gray-400'
         />
         <div>
-          <h2>{props.country.nativeName}</h2>
+          <h2>
+            {props.country.name}
+            {props.country.nativeName !== props.country.name && (
+              <> / {props.country.nativeName}</>
+            )}
+          </h2>
           <small className='text-gray-500'>
             {props.country.region} / {props.country.subregion} /{' '}
             {props.country.name}

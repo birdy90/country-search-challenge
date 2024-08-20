@@ -11,25 +11,35 @@ import { MdClose } from 'react-icons/md';
 
 import { cn } from '@/lib/cn';
 
-export const Input = (props: AllHTMLAttributes<HTMLInputElement>) => {
+type InputProps = AllHTMLAttributes<HTMLInputElement> & {
+  onClear?: () => void;
+};
+
+export const Input = (props: InputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { className, value, onInput, ...inputProps } = props;
+  const { className, value, onInput, onChange, onClear, ...inputProps } = props;
   const [searchString, setSearchString] = useState(value);
 
-  function onInputChange(e: ChangeEvent<HTMLInputElement>) {
+  function onInputHandler(e: ChangeEvent<HTMLInputElement>) {
     setSearchString(e.target?.value);
     onInput?.(e);
   }
 
-  function onClear() {
+  function onChangeHandler(e: ChangeEvent<HTMLInputElement>) {
+    setSearchString(e.target?.value);
+    onChange?.(e);
+  }
+
+  function onInputClear() {
     if (!inputRef.current) return;
     setSearchString('');
     inputRef.current.focus();
+    onClear?.();
   }
 
   function onEscapeDown(e: KeyboardEvent) {
     if (e.code === 'Escape') {
-      onClear();
+      onInputClear();
     }
   }
 
@@ -39,7 +49,7 @@ export const Input = (props: AllHTMLAttributes<HTMLInputElement>) => {
     }
 
     if (e.code === 'Enter' || e.code === 'Space') {
-      onClear();
+      onInputClear();
     }
   }
 
@@ -56,13 +66,15 @@ export const Input = (props: AllHTMLAttributes<HTMLInputElement>) => {
         ref={inputRef}
         className='border-none focus-visible:ring-0 grow'
         value={searchString}
-        onInput={onInputChange}
+        onInput={onInputHandler}
+        onChange={onChangeHandler}
         {...inputProps}
       />
+
       {!!searchString && (
         <MdClose
           className='size-8 p-1 text-gray-400 hover:text-gray-600 cursor-pointer'
-          onClick={onClear}
+          onClick={onInputClear}
           onKeyDown={onClearKeyDown}
           tabIndex={0}
         />

@@ -1,19 +1,23 @@
 import { render, screen } from '@testing-library/react';
 
-import { ResultsList } from '@/components/resultsList';
+import { countries } from '@/data/countries';
+
+import { SearchResults } from '@/components/searchResults';
 
 describe('results list', () => {
   test('show no results', () => {
-    render(<ResultsList items={[]} />);
+    render(<SearchResults items={[]} />);
     expect(screen.getByRole('listitem')).toHaveTextContent('Nothing found');
   });
 
   test('show data', () => {
-    const data = ['test 1', 'test 2', 'test 3'];
-    render(<ResultsList items={data} />);
+    const data = countries.slice(0, 3);
+    render(<SearchResults items={data} />);
     expect(screen.getAllByRole('listitem')).toHaveLength(data.length);
     data.forEach((item) => {
-      expect(screen.getByRole('listitem', { name: item })).toBeInTheDocument();
+      expect(
+        screen.getByRole('listitem', { name: item.name }),
+      ).toBeInTheDocument();
     });
   });
 });
