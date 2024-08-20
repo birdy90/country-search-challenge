@@ -3,7 +3,6 @@
 import {
   AllHTMLAttributes,
   ChangeEvent,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -56,7 +55,7 @@ export const CountrySearchInput = (props: CountrySearchInputProps) => {
     onSelected?.(country);
   };
 
-  const search = useCallback(async () => {
+  const search = async () => {
     try {
       const data = await performSearch(throttledSearchValue).catch(async () => {
         // retry with local coordinates
@@ -93,12 +92,13 @@ export const CountrySearchInput = (props: CountrySearchInputProps) => {
     } finally {
       setLoading(false);
     }
-  }, [geolocation, throttledSearchValue]);
+  };
 
   useEffect(() => {
     if (throttledSearchValue === '') return;
     search();
-  }, [search, throttledSearchValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [throttledSearchValue]);
 
   // clear results immediately if search string is empty
   useEffect(() => {

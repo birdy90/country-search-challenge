@@ -1,10 +1,4 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
 import { Coordinates } from '@/types';
 
@@ -33,15 +27,15 @@ export const GeolocationProvider = (props: PropsWithChildren) => {
   const [error, setError] = useState(defaultValues.error);
   const [coords, setCoords] = useState<Coordinates>();
 
-  const ctx = useRef({
-    coords,
-    error,
-    setCoords,
-    setError,
-  });
-
   return (
-    <geolocationContext.Provider value={ctx.current}>
+    <geolocationContext.Provider
+      value={{
+        coords,
+        error,
+        setCoords,
+        setError,
+      }}
+    >
       {props.children}
     </geolocationContext.Provider>
   );
