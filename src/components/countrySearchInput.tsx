@@ -3,12 +3,18 @@
 import {
   AllHTMLAttributes,
   ChangeEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
 
-import { performSearch } from '@/lib/searchUtils';
+import { GeolocationErrors, useGeolocation } from '@/lib/geolocationContext';
+import {
+  getClientsPosition,
+  IpRequestErrors,
+  performSearch,
+} from '@/lib/searchUtils';
 import { useDebouncedValue } from '@/lib/useDebouncedValue';
 
 import { Input } from '@/components/input';
@@ -24,14 +30,17 @@ type CountrySearchInputProps = Omit<
 };
 
 export const CountrySearchInput = (props: CountrySearchInputProps) => {
+  const { onSelected, ...inputProps } = props;
+
   const listRef = useRef<HTMLUListElement>(null);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<CountryItem[]>([]);
   const [resultsHeight, setResultsHeight] = useState(0);
   const [loading, setLoading] = useState(false);
+  const geolocation = useGeolocation();
+
   const throttledSearchValue = useDebouncedValue(searchValue, 500);
   const isListVisible = searchValue.length > 0;
-  const { onSelected, ...inputProps } = props;
 
   const inputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -47,20 +56,58 @@ export const CountrySearchInput = (props: CountrySearchInputProps) => {
     onSelected?.(country);
   };
 
+  const search = useCallback(async () => {
+    try {
+      const data = await performSearch(throttledSearchValue).catch(async () => {
+        // retry with local coordinates
+        const localCoords =
+          geolocation.coords ??
+          (await getClientsPosition().catch((e) => {
+            geolocation.setError?.(GeolocationErrors.LOCATION_IS_TURNED_OFF);
+            throw new Error(e);
+          }));
+        geolocation.setError?.('');
+        return performSearch(throttledSearchValue, localCoords);
+      });
+
+      // save latest coordinates
+      if (data.coords) {
+        geolocation.setCoords?.(data.coords);
+      }
+
+      setSearchResults(data.results ?? []);
+      setLoading(false);
+    } catch (e: unknown) {
+      const error = e as Error;
+
+      if (error.message === IpRequestErrors.NO_COORDS_FOUND) {
+        geolocation.setError?.(GeolocationErrors.LOCATION_IS_TURNED_OFF);
+        return;
+      }
+
+      // we use console.error here instead of sending a message to a logging system ony for current challenge
+      // eslint-disable-next-line no-console
+      console.error(
+        `Unexpected error while performing search: ${error.message}`,
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [geolocation, throttledSearchValue]);
+
   useEffect(() => {
     if (throttledSearchValue === '') return;
-    performSearch(throttledSearchValue).then((data) => {
-      setSearchResults(data);
-      setLoading(false);
-    });
-  }, [throttledSearchValue]);
+    search();
+  }, [search, throttledSearchValue]);
 
+  // clear results immediately if search string is empty
   useEffect(() => {
     if (searchValue === '') {
       setSearchResults([]);
     }
   }, [searchValue]);
 
+  // recalculate search results list size
   useEffect(() => {
     if (!isListVisible || !listRef.current) return;
     const rect = listRef.current.getBoundingClientRect();
@@ -76,6 +123,7 @@ export const CountrySearchInput = (props: CountrySearchInputProps) => {
         onClear={onClear}
         {...inputProps}
       />
+
       {isListVisible && (
         <SearchResults
           ref={listRef}

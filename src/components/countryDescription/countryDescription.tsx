@@ -37,6 +37,7 @@ export const CountryDescription = (props: CountryDescriptionProps) => {
               <> / {props.country.nativeName}</>
             )}
           </h2>
+
           <small className='text-gray-500'>
             {props.country.region} / {props.country.subregion} /{' '}
             {props.country.name}

@@ -23,15 +23,16 @@
 - [x] API: endpoint to get and sort data by string
 - [x] combine input and results list
 - [x] select a country
-- [ ] coordinates selector styling, make it clearable
-- [ ] pass selected coordinates to API
+- [x] latest used coordinates indicator
 
 ## Additional considerations
 
 - I don't log errors to logging systems here
-- I did not implement full keyboard navigation for search results list. I could have used Downshift to handle that
+- I have not implemented full keyboard navigation for search results list. I could have used Downshift to handle that
 - it is better to cache responses from IP API for different IP addresses to avoid additional requests
+- if for some reason IP API doesn't return coordinates (on localhost, for example), then I make another call using Geolocation API to set coordinates for request
 - result list won't overflow the screen, but it is always below the search input and I didn't solve the situation when input is close to bottom side of the window
+- probably, it's good to use fuzzy search (like Levenstein's distance) here, so people could make typos and still get results
 
 ## Run information
 

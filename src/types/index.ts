@@ -6,6 +6,7 @@ export type Coordinates = {
 export type SearchResponse = {
   error?: string;
   results?: CountryItem[];
+  coords?: Coordinates;
 };
 
 export type CountryItem = {

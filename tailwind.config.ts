@@ -7,6 +7,7 @@ export default {
     colors: {
       white: colors.white,
       black: colors.black,
+      red: colors.red,
       gray: colors.gray,
       primary: colors.blue,
     },

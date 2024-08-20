@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     return Response.json({ results: [] });
   }
 
+  // prepare coordinates
   let coords;
   try {
     const ip = getIpFromRequest(request);
@@ -29,10 +30,13 @@ export async function GET(request: NextRequest) {
 
   // if no coordinates defined
   if (!coords.lat || !coords.lng) {
-    return Response.json({ error: IpRequestErrors.NOT_FOUND }, { status: 404 });
+    return Response.json(
+      { error: IpRequestErrors.NO_COORDS_FOUND },
+      { status: 404 },
+    );
   }
 
   const filteredCountries = findClosestCountry(searchString, coords);
 
-  return Response.json({ results: filteredCountries });
+  return Response.json({ results: filteredCountries, coords });
 }

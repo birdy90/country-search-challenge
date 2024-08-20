@@ -3,7 +3,7 @@ import { countries } from '@/data/countries';
 import { Coordinates, CountryItem, SearchResponse } from '@/types';
 
 export enum IpRequestErrors {
-  NOT_FOUND = 'not-found',
+  NO_COORDS_FOUND = 'no-coords-found',
   IP_REQUEST_FAILED = 'ip-request-failed',
 }
 
@@ -92,14 +92,19 @@ export const findClosestCountry = (
 /*
 Gets client-side coordinates
  */
-const getClientsPosition = async () => {
-  return await new Promise<Coordinates>((res) => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      res({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-      });
-    });
+export const getClientsPosition = async () => {
+  return await new Promise<Coordinates>((res, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        res({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (e) => {
+        reject(e);
+      },
+    );
   });
 };
 
@@ -109,7 +114,7 @@ Performs search on the client-side
 export const performSearch = async (
   searchValue: string,
   coords?: Coordinates,
-): Promise<CountryItem[]> => {
+): Promise<SearchResponse> => {
   const params = new URLSearchParams();
   params.append('search', searchValue);
   if (coords) {
@@ -117,28 +122,13 @@ export const performSearch = async (
     params.append('lng', coords.lng.toString());
   }
 
-  try {
-    const response = await fetch(
-      `/api/search?${params.toString()}`,
-    ).then<SearchResponse>(async (data) => data.json());
+  const response = await fetch(
+    `/api/search?${params.toString()}`,
+  ).then<SearchResponse>(async (data) => data.json());
 
-    if (response.error !== undefined) {
-      if (!coords) {
-        const clientCoords = await getClientsPosition();
-        return await performSearch(searchValue, clientCoords);
-      } else {
-        return [];
-      }
-    } else {
-      return response.results ?? [];
-    }
-  } catch (e: unknown) {
-    const error = e as Error;
-
-    // we use console.error here instead of sending a message to a logging system ony for current challenge
-    // eslint-disable-next-line no-console
-    console.error(`Unexpected error while performing search: ${error.message}`);
+  if (response.error !== undefined) {
+    throw new Error(response.error);
+  } else {
+    return response;
   }
-
-  return [];
 };
