@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  AllHTMLAttributes,
-  ChangeEvent,
-  KeyboardEvent,
-  useRef,
-  useState,
-} from 'react';
+import { AllHTMLAttributes, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { MdClose } from 'react-icons/md';
 
 import { cn } from '@/lib/cn';
@@ -18,21 +12,17 @@ type InputProps = AllHTMLAttributes<HTMLInputElement> & {
 export const Input = (props: InputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { className, value, onInput, onChange, onClear, ...inputProps } = props;
-  const [searchString, setSearchString] = useState(value);
 
   function onInputHandler(e: ChangeEvent<HTMLInputElement>) {
-    setSearchString(e.target?.value);
     onInput?.(e);
   }
 
   function onChangeHandler(e: ChangeEvent<HTMLInputElement>) {
-    setSearchString(e.target?.value);
     onChange?.(e);
   }
 
   function onInputClear() {
     if (!inputRef.current) return;
-    setSearchString('');
     inputRef.current.focus();
     onClear?.();
   }
@@ -65,13 +55,13 @@ export const Input = (props: InputProps) => {
       <input
         ref={inputRef}
         className='border-none focus-visible:ring-0 grow'
-        value={searchString}
+        value={value}
         onInput={onInputHandler}
         onChange={onChangeHandler}
         {...inputProps}
       />
 
-      {!!searchString && (
+      {!!value && (
         <MdClose
           className='size-8 p-1 text-gray-400 hover:text-gray-600 cursor-pointer'
           onClick={onInputClear}

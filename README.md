@@ -22,15 +22,16 @@
 - [x] API: handle coordinates from request parameters
 - [x] API: endpoint to get and sort data by string
 - [x] combine input and results list
-- [ ] select a country
+- [x] select a country
 - [ ] coordinates selector styling, make it clearable
 - [ ] pass selected coordinates to API
 
-## Thoughts
+## Additional considerations
 
 - I don't log errors to logging systems here
 - I did not implement full keyboard navigation for search results list. I could have used Downshift to handle that
-- it is better to cache responses from IP API for different IP addresses to avoid additional requests.
+- it is better to cache responses from IP API for different IP addresses to avoid additional requests
+- result list won't overflow the screen, but it is always below the search input and I didn't solve the situation when input is close to bottom side of the window
 
 ## Run information
 

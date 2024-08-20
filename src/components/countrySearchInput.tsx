@@ -16,27 +16,42 @@ import { SearchResults } from '@/components/searchResults';
 
 import { CountryItem } from '@/types';
 
-export const CountrySearchInput = (
-  props: Omit<
-    AllHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'onInput'
-  >,
-) => {
+type CountrySearchInputProps = Omit<
+  AllHTMLAttributes<HTMLInputElement>,
+  'value' | 'defaultValue' | 'onChange' | 'onInput'
+> & {
+  onSelected?: (country: CountryItem) => void;
+};
+
+export const CountrySearchInput = (props: CountrySearchInputProps) => {
   const listRef = useRef<HTMLUListElement>(null);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<CountryItem[]>([]);
   const [resultsHeight, setResultsHeight] = useState(0);
+  const [loading, setLoading] = useState(false);
   const throttledSearchValue = useDebouncedValue(searchValue, 500);
   const isListVisible = searchValue.length > 0;
+  const { onSelected, ...inputProps } = props;
 
   const inputHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     setSearchValue(e.target.value);
+  };
+
+  const onClear = () => {
+    setSearchValue('');
+  };
+
+  const onCountrySelect = (country: CountryItem) => {
+    onClear();
+    onSelected?.(country);
   };
 
   useEffect(() => {
     if (throttledSearchValue === '') return;
     performSearch(throttledSearchValue).then((data) => {
       setSearchResults(data);
+      setLoading(false);
     });
   }, [throttledSearchValue]);
 
@@ -58,8 +73,8 @@ export const CountrySearchInput = (
       <Input
         value={searchValue}
         onInput={inputHandler}
-        onClear={() => setSearchValue('')}
-        {...props}
+        onClear={onClear}
+        {...inputProps}
       />
       {isListVisible && (
         <SearchResults
@@ -67,6 +82,8 @@ export const CountrySearchInput = (
           className='absolute z-10 top-[calc(100%+0.5rem)]'
           style={{ maxHeight: `${resultsHeight}px` }}
           items={searchResults}
+          onSelected={onCountrySelect}
+          loading={loading}
         />
       )}
     </div>
