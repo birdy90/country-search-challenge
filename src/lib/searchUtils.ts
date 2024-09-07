@@ -47,6 +47,46 @@ export const getCoords = async (ip: string, params: URLSearchParams) => {
 };
 
 /*
+Converts coordinates
+ */
+export const polarToCartesian = (latAngle: number, lngAngle: number) => {
+  const lat = (Math.PI * latAngle) / 180;
+  const lng = (Math.PI * lngAngle) / 180;
+
+  const x = Math.cos(lat) * Math.cos(lng);
+  const y = Math.cos(lat) * Math.sin(lng);
+  const z = Math.sin(lat);
+
+  return [x, y, z];
+};
+
+/*
+Cartesian vector length
+ */
+export const vectorLength = (x: number, y: number, z: number) => {
+  return Math.sqrt(x * x + y * y + z * z);
+};
+
+/*
+Returns angle between two polar points
+ */
+export const calculateDistance = (
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+) => {
+  const [x1, y1, z1] = polarToCartesian(lat1, lng1);
+  const [x2, y2, z2] = polarToCartesian(lat2, lng2);
+  const len1 = vectorLength(x1, y1, z1);
+  const len2 = vectorLength(x2, y2, z2);
+
+  const dotProduct = x1 * x2 + y1 * y2 + z1 * z2;
+  const radiantAngle = Math.acos(dotProduct / (len1 * len2));
+  return (180 * radiantAngle) / Math.PI;
+};
+
+/*
 Attaches distance property to every country object for farther search
  */
 export const appendDistancesToCountries = (
@@ -54,9 +94,12 @@ export const appendDistancesToCountries = (
   coords: Coordinates,
 ) => {
   return list.map<{ country: CountryItem; distance: number }>((country) => {
-    const diffLat = country.latlng[0] - coords.lat;
-    const diffLng = country.latlng[1] - coords.lng;
-    const distance = Math.sqrt(diffLat * diffLat + diffLng * diffLng);
+    const distance = calculateDistance(
+      country.latlng[0],
+      country.latlng[1],
+      coords.lat,
+      coords.lng,
+    );
 
     return {
       country,

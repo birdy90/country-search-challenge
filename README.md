@@ -24,6 +24,7 @@
 - [x] combine input and results list
 - [x] select a country
 - [x] latest used coordinates indicator
+- [x] [post-challenge] fix distance calculations (calculate angle between two points/vectors)
 
 ## Additional considerations
 
