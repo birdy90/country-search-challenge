@@ -24,6 +24,7 @@
 - [x] combine input and results list
 - [x] select a country
 - [x] latest used coordinates indicator
+- [ ] [post-challenge] add world map to display locations
 
 ## Additional considerations
 
